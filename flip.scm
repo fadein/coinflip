@@ -1,84 +1,77 @@
 #!/usr/local/bin/csi -s
-# http://ascii-table.com/ansi-escape-sequences-vt-100.php
+; http://ascii-table.com/ansi-escape-sequences-vt-100.php
 
-(use ansi-escape-sequences)
+(use ansi-escape-sequences srfi-1 srfi-13 srfi-18 posix)
+(include "dude.scm")
 
-$| = 1;
+(define (make-spinner chars)
+  (let ((chars (cond
+                 ((string? chars)
+                  (apply circular-list (string->list chars)))
+                 ((list? chars)
+                  (apply circular-list chars)))))
+    (lambda ()
+		(set! chars (cdr chars))
+		(car chars))))
 
-my ($up, $right) = (9, 15);
-my $height = 11;
-my @anim = qw(/ - \\ |);
+(define back-flip (make-spinner "-/|\\"))
 
-my $delay = 0.1;
+(set-buffering-mode! (current-output-port) #:none)
 
-# hide cursor
-print "\e[?25l";
+(define up 9)
+(define height 11)
+(define right 15)
+(define delay 0.1)
 
-print <<'DUDE';
+(display (hide-cursor))
 
+(print dude)
 
-   /"""""
-  |  (')')
-  C     _)
-   \   _|
-    \__/
-   <___Y>
-  /  \ :\\
- /   |  :|\
- |___|  :|/\
-  | |   :|\ \
-  \ \   :| \ \_
-   \ \==L|  \\\
-   ///` ||
-    |   ||
-    |   ||
-    |   ||
-    |   ||
-    [___]]
-jgs (____))
-DUDE
+; position cursor right after the coin
+(print* (cursor-up up) (cursor-forward right))
 
-# Move cursor up 7, right 10
+; coin go up
+(thread-sleep! delay)
 
-# position cursor right after the coin
-print "\e[${up}A\e[${right}C";
+(print* (cursor-backward 1) #\i (cursor-backward 1) (cursor-up 1) #\|)
+(thread-sleep! delay)
 
-# coin go up
+(do ((i 1 (add1 i))) ((= i height))
+	(print* (cursor-backward 1) #\space
+			(cursor-backward 1)
+			(cursor-up 1) (back-flip))
+	(thread-sleep! delay))
 
-select undef, undef, undef, $delay;
-print "\e[1Di\e[1D\e[1A|";
-select undef, undef, undef, $delay;
+; coin go down
+(do ((i 1 (add1 i))) ((> i height))
+	(print* (cursor-backward 1) #\space
+			(cursor-backward 1)
+			(cursor-down 1) (back-flip))
+	(thread-sleep! delay))
 
-foreach my $i (1 .. $height) {
-	print "\e[1D \e[1D\e[1A@{[$anim[$i % $#anim]]}";
-	select undef, undef, undef, $delay;
-}
-
-
-# coin go down
-foreach my $i (1 .. $height + 1) {
-	select undef, undef, undef, $delay;
-	print "\e[1D \e[1D\e[1B@{[$anim[$i % $#anim]]}";
-}
-print "\e[1D \e[1B\e[1D\e[1A-";
-
-# put the cursor back beneath the guy
-print "\e[${right}D\e[${up}B";
-
-# print the result of the flip
-printf "It's %s\n", int(rand() * 2) % 2 ? 'heads' : 'tails';
-
-if (@ARGV) {
-	my @alternatives = grep { $_ !~ /or/i } @ARGV;
-	print "You should go with '@{[ $alternatives[int(rand($#alternatives))] ]}'\n";
-}
-
-#restore cursor
-print "\e[?25h";
+(print* 
+  (cursor-backward 1) #\space
+  (cursor-down 1)
+  (cursor-backward 1) 
+  (cursor-up 1) #\-)
 
 
-__DATA__
-\e[nA up n lines
-\e[nB down n lines
-\e[nC right n cols
-\e[nD left n cols
+; put the cursor back beneath the guy
+(print* (cursor-backward right) (cursor-down up))
+
+; print the result of the flip
+(printf "\nIt's ~s\n" (if (= 0 (random 2)) "heads" "tails"))
+
+(when (not (zero? (length (command-line-arguments))))
+  (let ((alternatives (filter (lambda (s) (string-ci<> s "or")) (command-line-arguments))))
+	(printf "You should go with ~s\n"
+	(list-ref alternatives (random (length alternatives))))))
+
+;restore cursor
+(display (show-cursor))
+
+;; __DATA__
+;; \e[nA up n lines
+;; \e[nB down n lines
+;; \e[nC right n cols
+;; \e[nD left n cols
