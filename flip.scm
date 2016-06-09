@@ -2,7 +2,6 @@
 ; http://ascii-table.com/ansi-escape-sequences-vt-100.php
 
 (use ansi-escape-sequences srfi-1 srfi-13 srfi-18 posix)
-(include "dude.scm")
 
 (define (make-spinner chars)
   (let ((chars (cond
@@ -13,18 +12,16 @@
     (lambda ()
 		(set! chars (cdr chars))
 		(car chars))))
-
 (define back-flip (make-spinner "-/|\\"))
 
-(set-buffering-mode! (current-output-port) #:none)
-
+(include "dude.scm")
 (define up 9)
 (define height 11)
 (define right 15)
 (define delay 0.1)
 
+(set-buffering-mode! (current-output-port) #:none)
 (display (hide-cursor))
-
 (print dude)
 
 ; position cursor right after the coin
@@ -49,11 +46,7 @@
 			(cursor-down 1) (back-flip))
 	(thread-sleep! delay))
 
-(print* 
-  (cursor-backward 1) #\space
-  (cursor-down 1)
-  (cursor-backward 1) 
-  (cursor-up 1) #\-)
+(print* (cursor-backward 1) #\space (cursor-down 1) (cursor-backward 1) (cursor-up 1) #\-)
 
 
 ; put the cursor back beneath the guy
