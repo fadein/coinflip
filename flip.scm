@@ -11,7 +11,7 @@
                   (apply circular-list chars)))))
     (lambda ()
 		(set! chars (cdr chars))
-		(car chars))))
+		(conc "[1;33m" (car chars) "[0m"))))
 (define back-flip (make-spinner "-/|\\"))
 
 (include "dude.scm")
@@ -24,19 +24,23 @@
 (display (hide-cursor))
 (print dude)
 
-; position cursor right after the coin
-(print* (cursor-up up) (cursor-forward right))
-
-; coin go up
+; color the coin yellow
+(print* (cursor-up up) (cursor-forward (sub1 right)) "[1;33m-" )
 (thread-sleep! delay)
 
-(print* (cursor-backward 1) #\i (cursor-backward 1) (cursor-up 1) #\|)
+; coin go up
+(print* (cursor-backward 1) "[0mi" (cursor-backward 1) (cursor-up 1) "[1;33m|")
 (thread-sleep! delay)
 
 (do ((i 1 (add1 i))) ((= i height))
 	(print* (cursor-backward 1) #\space
 			(cursor-backward 1)
 			(cursor-up 1) (back-flip))
+	(thread-sleep! delay))
+
+; spin for a moment
+(do ((i 1 (add1 i))) ((= i 4))
+	(print* (cursor-backward 1) (back-flip))
 	(thread-sleep! delay))
 
 ; coin go down
@@ -46,7 +50,7 @@
 			(cursor-down 1) (back-flip))
 	(thread-sleep! delay))
 
-(print* (cursor-backward 1) #\space (cursor-down 1) (cursor-backward 1) (cursor-up 1) #\-)
+(print* (cursor-backward 1) #\space (cursor-down 1) (cursor-backward 1) (cursor-up 1) "[1;33m-[0m")
 
 
 ; put the cursor back beneath the guy
