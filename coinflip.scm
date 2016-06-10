@@ -6,12 +6,12 @@
 (define (make-spinner chars)
   (let ((chars (cond
                  ((string? chars)
-                  (apply circular-list (string->list chars)))
+                  (apply circular-list (map string (string->list chars))))
                  ((list? chars)
                   (apply circular-list chars)))))
     (lambda ()
 		(set! chars (cdr chars))
-		(conc "[1;33m" (car chars) "[0m"))))
+		(conc (set-text '(bold fg-yellow) (car chars) #t)))))
 (define back-flip (make-spinner "-/|\\"))
 
 (include "dude.scm")
@@ -25,11 +25,12 @@
 (print dude)
 
 ; color the coin yellow
-(print* (cursor-up up) (cursor-forward (sub1 right)) "[1;33m-" )
+(print* (cursor-up up) (cursor-forward (sub1 right)) (set-text '(bold fg-yellow) "-"))
 (thread-sleep! (* pause 4))
 
 ; coin go up
-(print* (cursor-backward 1) "[0;33mi" (cursor-backward 1) (cursor-up 1) "[1;33m|")
+(print* (cursor-backward 1) (set-text '(fg-yellow) "i") (cursor-backward 1) (cursor-up 1)
+		(set-text '(bold fg-yellow) "|"))
 (thread-sleep! pause)
 
 (do ((i 1 (add1 i))) ((= i height))
@@ -50,7 +51,8 @@
 			(cursor-down 1) (back-flip))
 	(thread-sleep! pause))
 
-(print* (cursor-backward 1) #\space (cursor-down 1) (cursor-backward 1) (cursor-up 1) "[1;33m-[0m")
+(print* (cursor-backward 1) #\space (cursor-down 1) (cursor-backward 1) (cursor-up 1) 
+		(set-text '(bold fg-yellow) "-" #t))
 
 (thread-sleep! (* pause 2))
 
