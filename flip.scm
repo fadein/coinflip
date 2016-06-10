@@ -18,7 +18,7 @@
 (define up 9)
 (define height 11)
 (define right 15)
-(define delay 0.1)
+(define pause 0.07)
 
 (set-buffering-mode! (current-output-port) #:none)
 (display (hide-cursor))
@@ -26,38 +26,39 @@
 
 ; color the coin yellow
 (print* (cursor-up up) (cursor-forward (sub1 right)) "[1;33m-" )
-(thread-sleep! delay)
+(thread-sleep! (* pause 4))
 
 ; coin go up
 (print* (cursor-backward 1) "[0;33mi" (cursor-backward 1) (cursor-up 1) "[1;33m|")
-(thread-sleep! delay)
+(thread-sleep! pause)
 
 (do ((i 1 (add1 i))) ((= i height))
 	(print* (cursor-backward 1) #\space
 			(cursor-backward 1)
 			(cursor-up 1) (back-flip))
-	(thread-sleep! delay))
+	(thread-sleep! pause))
 
 ; spin for a moment
 (do ((i 1 (add1 i))) ((= i 4))
 	(print* (cursor-backward 1) (back-flip))
-	(thread-sleep! delay))
+	(thread-sleep! pause))
 
 ; coin go down
 (do ((i 1 (add1 i))) ((> i height))
 	(print* (cursor-backward 1) #\space
 			(cursor-backward 1)
 			(cursor-down 1) (back-flip))
-	(thread-sleep! delay))
+	(thread-sleep! pause))
 
 (print* (cursor-backward 1) #\space (cursor-down 1) (cursor-backward 1) (cursor-up 1) "[1;33m-[0m")
 
+(thread-sleep! (* pause 2))
 
 ; put the cursor back beneath the guy
 (print* (cursor-backward right) (cursor-down up))
 
 ; print the result of the flip
-(printf "\nIt's ~s\n" (if (= 0 (random 2)) "heads" "tails"))
+(printf "\nIt's ~s\n" (if (= 0 (random 2)) 'heads 'tails))
 
 (when (not (zero? (length (command-line-arguments))))
   (let ((alternatives (filter (lambda (s) (string-ci<> s "or")) (command-line-arguments))))
