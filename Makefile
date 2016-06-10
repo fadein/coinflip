@@ -1,7 +1,7 @@
 .PHONY: clean
 
-flip: flip.scm
+coinflip: coinflip.scm
 	csc $^
 
 clean:
-	-rm -f flip
+	-rm -f coinflip
