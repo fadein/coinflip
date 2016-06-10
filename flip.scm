@@ -29,7 +29,7 @@
 (thread-sleep! delay)
 
 ; coin go up
-(print* (cursor-backward 1) "[0mi" (cursor-backward 1) (cursor-up 1) "[1;33m|")
+(print* (cursor-backward 1) "[0;33mi" (cursor-backward 1) (cursor-up 1) "[1;33m|")
 (thread-sleep! delay)
 
 (do ((i 1 (add1 i))) ((= i height))
