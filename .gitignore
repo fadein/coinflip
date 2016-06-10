@@ -1,2 +1,4 @@
 coinflip
+coinflip.exe
 coinflip.c
+*.o

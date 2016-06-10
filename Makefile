@@ -1,7 +1,7 @@
 .PHONY: clean
 
-coinflip: coinflip.scm
-	csc $^
+coinflip: coinflip.scm dude.scm
+	csc $<
 
 clean:
 	-rm -f coinflip
