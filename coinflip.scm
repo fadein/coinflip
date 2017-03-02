@@ -1,7 +1,9 @@
 #!/usr/local/bin/csi -s
 ; http://ascii-table.com/ansi-escape-sequences-vt-100.php
 
+(import foreign)
 (use ansi-escape-sequences srfi-1 srfi-13 srfi-18 posix)
+(define nice (foreign-lambda int "nice" int)) ; (foreign-declare "#include <unistd.h>") wasn't needed
 
 (define (make-spinner chars)
   (let ((chars (cond
@@ -19,6 +21,8 @@
 (define height 11)
 (define right 15)
 (define pause 0.07)
+
+(nice 11)
 
 (set-buffering-mode! (current-output-port) #:none)
 (display (hide-cursor))
