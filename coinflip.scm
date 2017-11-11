@@ -66,10 +66,10 @@
 ; print the result of the flip
 (printf "\nIt's ~s\n" (if (= 0 (random 2)) 'heads 'tails))
 
-(when (not (zero? (length (command-line-arguments))))
-  (let ((alternatives (filter (lambda (s) (string-ci<> s "or")) (command-line-arguments))))
-	(printf "You should go with ~s\n"
-	(list-ref alternatives (random (length alternatives))))))
+(let ((alternatives (filter (lambda (s) (string-ci<> s "or")) (command-line-arguments))))
+  (when (not (zero? (length alternatives)))
+    (printf "You should go with ~s\n"
+            (list-ref alternatives (random (length alternatives))))))
 
 ;restore cursor
 (display (show-cursor))
